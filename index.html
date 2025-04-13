@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>给最爱的人</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #000;
+            color: #fff;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 1s;
+        }
+
+        /* 宝箱样式 */
+        .treasure-chest {
+            width: 200px;
+            height: 150px;
+            background: linear-gradient(145deg, #d4af37, #f9d423);
+            border-radius: 10px;
+            position: relative;
+            cursor: pointer;
+            box-shadow: 0 0 30px #f9d423, 0 0 60px #d4af37;
+            animation: glow 2s infinite alternate;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.5s;
+        }
+
+        .treasure-chest:hover {
+            transform: scale(1.05);
+        }
+
+        .treasure-chest::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 180px;
+            height: 30px;
+            background: linear-gradient(145deg, #d4af37, #f9d423);
+            border-radius: 5px;
+        }
+
+        .treasure-chest::after {
+            content: '点击打开';
+            position: absolute;
+            bottom: -40px;
+            color: #fff;
+            font-size: 18px;
+            text-shadow: 0 0 5px #f9d423;
+        }
+
+        @keyframes glow {
+            from {
+                box-shadow: 0 0 20px #f9d423, 0 0 40px #d4af37;
+            }
+            to {
+                box-shadow: 0 0 30px #f9d423, 0 0 60px #d4af37, 0 0 80px #ffdb58;
+            }
+        }
+
+        /* 视频容器 */
+        .video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            z-index: 100;
+            background-color: #000;
+        }
+
+        .video-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* 图片画廊 */
+        .gallery {
+            display: none;
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #000;
+            z-index: 101;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gallery-image {
+            max-width: 90%;
+            max-height: 80vh;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            display: none;
+        }
+
+        .gallery-image.active {
+            display: block;
+            animation: fadeIn 1s;
+        }
+
+        .gallery-nav {
+            position: fixed;
+            bottom: 30px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .gallery-nav button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .gallery-nav button:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* 关闭按钮 */
+        .close-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 102;
+            display: none;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <!-- 宝箱 -->
+    <div class="treasure-chest" id="treasureChest"></div>
+
+    <!-- 视频容器 -->
+    <div class="video-container" id="videoContainer">
+        <video id="loveVideo" autoplay>
+            <!-- 替换为你的视频文件 -->
+            <source src="your-video.mp4" type="video/mp4">
+            您的浏览器不支持视频播放
+        </video>
+    </div>
+
+    <!-- 图片画廊 -->
+    <div class="gallery" id="gallery">
+        <!-- 替换为你的图片 -->
+        <img src="image1.jpg" class="gallery-image" alt="我们的回忆1">
+        <img src="image2.jpg" class="gallery-image" alt="我们的回忆2">
+        <img src="image3.jpg" class="gallery-image" alt="我们的回忆3">
+        <img src="image4.jpg" class="gallery-image" alt="我们的回忆4">
+        
+        <div class="gallery-nav">
+            <button id="prevBtn">上一张</button>
+            <button id="nextBtn">下一张</button>
+        </div>
+    </div>
+
+    <!-- 关闭按钮 -->
+    <button class="close-btn" id="closeBtn">×</button>
+
+    <script>
+        // 获取元素
+        const treasureChest = document.getElementById('treasureChest');
+        const videoContainer = document.getElementById('videoContainer');
+        const loveVideo = document.getElementById('loveVideo');
+        const gallery = document.getElementById('gallery');
+        const galleryImages = document.querySelectorAll('.gallery-image');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const closeBtn = document.getElementById('closeBtn');
+
+        let currentImageIndex = 0;
+
+        // 点击宝箱
+        treasureChest.addEventListener('click', () => {
+            treasureChest.style 'none';
+            videoContainer.style.display = 'block';
+            loveVideo.play();
+        });
+
+        // 视频结束
+        loveVideo.addEventListener('ended', () => {
+            videoContainer.style.display = 'none';
+            gallery.style.display = 'flex';
+            closeBtn.style.display = 'block';
+            showImage(currentImageIndex);
+        });
+
+        // 显示图片
+        function showImage(index) {
+            galleryImages.forEach(img => img.classList.remove('active'));
+            galleryImages[index].classList.add('active');
+        }
+
+        // 上一张
+        prevBtn.addEventListener('click', () => {
+            currentImageIndex = (currentImageIndex - 1 + galleryImages.length) % galleryImages.length;
+            showImage(currentImageIndex);
+        });
+
+        // 下一张
+        nextBtn.addEventListener('click', () => {
+            currentImageIndex = (currentImageIndex + 1) % galleryImages.length;
+            showImage(currentImageIndex);
+        });
+
+        // 关闭画廊
+        closeBtn.addEventListener('click', () => {
+            gallery.style.display = 'none';
+            close.display = 'none';
+            treasureChest.style.display = 'flex';
+        });
+
+        // 键盘控制
+        document.addEventListener('keydown', (e) => {
+            if (gallery.style.display === 'flex') {
+                if (e.key === 'ArrowLeft') {
+                    prevBtn.click();
+                } else if (e.key === 'ArrowRight') {
+                    nextBtn.click();
+                } else if (e.key === 'Escape') {
+                    closeBtn.click();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
