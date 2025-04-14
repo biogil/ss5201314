@@ -2,10 +2,76 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>给最爱的ss</title>
     <link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            text-align: center;
+        }
+        
+        #video-placeholder {
+            cursor: pointer;
+            max-width: 800px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s;
+        }
+        
+        #video-placeholder:hover {
+            transform: scale(1.02);
+        }
+        
+        #video-player {
+            display: none;
+            max-width: 800px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .instruction {
+            margin-top: 20px;
+            color: #666;
+        }
+    </style>
 </head>
 <body>
 <h1>I love you.</h1>
+    <div class="container">
+        <img id="video-placeholder" src="https://via.placeholder.com/800x450?text=点击播放视频" alt="视频缩略图">
+        <video id="video-player" controls>
+            <source src="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" type="video/mp4">
+            您的浏览器不支持HTML5视频。
+        </video>
+        <p class="instruction">点击上方图片开始播放视频</p>
+    </div>
+
+    <script>
+        const placeholder = document.getElementById('video-placeholder');
+        const videoPlayer = document.getElementById('video-player');
+        
+        placeholder.addEventListener('click', function() {
+            // 隐藏图片
+            placeholder.style.display = 'none';
+            // 显示视频并播放
+            videoPlayer.style.display = 'block';
+            videoPlayer.play();
+        });
+        
+        // 当视频结束时，重新显示图片
+        videoPlayer.addEventListener('ended', function() {
+            videoPlayer.style.display = 'none';
+            placeholder.style.display = 'block';
+        });
+    </script>
 </body>
 </html>
