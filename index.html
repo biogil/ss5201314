@@ -3,75 +3,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>给最爱的ss</title>
-    <link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32">
+    <link rel="icon" href="/favicon-32x32.png" type="image/png" size
+    <title>星辰絮语 · 致SS</title>
     <style>
+        /* 主背景与粒子特效（参考网页3粒子效果） */
         body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
             margin: 0;
-            background-color: #f5f5f5;
+            height: 100vh;
+            background: linear-gradient(45deg, #ff7eb9 0%, #7d7fff 100%);
+            overflow: hidden;
+            font-family: '华文行楷', cursive;
         }
         
-        .container {
+        /* 粒子画布 */
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        /* 情诗容器（参考网页9曲线设计） */
+        .poem-container {
+            position: relative;
+            z-index: 1;
+            width: 80%;
+            max-width: 800px;
+            margin: 10% auto;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        /* 情诗切换动画（参考网页6轮播原理） */
+        .poem {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1s ease;
+            position: absolute;
+            width: 85%;
             text-align: center;
         }
         
-        #video-placeholder {
+        .poem.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 文字样式（参考网页9字体建议） */
+        h2 {
+            color: #fff3f8;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(255, 110, 185, 0.5);
+            margin-bottom: 30px;
+        }
+        
+        p {
+            color: #fff;
+            font-size: 1.8em;
+            line-height: 1.8;
+            margin: 20px 0;
+            white-space: pre-line;
+        }
+
+        /* 控制按钮（参考网页3交互设计） */
+        .controls {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+        
+        button {
+            background: none;
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 50%;
+            font-size: 1.5em;
             cursor: pointer;
-            max-width: 800px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s;
+            transition: all 0.3s ease;
         }
         
-        #video-placeholder:hover {
-            transform: scale(1.02);
+        button:hover {
+            background: rgba(255,255,255,0.2);
+            transform: scale(1.1);
         }
-        
-        #video-player {
-            display: none;
-            max-width: 800px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+        /* 花瓣特效（参考网页3动态元素） */
+        .petal {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background: linear-gradient(45deg, #ff9ec7, #ffdae9);
+            border-radius: 50% 50% 0 50%;
+            pointer-events: none;
+            animation: fall 8s linear infinite;
         }
-        
-        .instruction {
-            margin-top: 20px;
-            color: #666;
+
+        @keyframes fall {
+            0% { transform: translateY(-10vh) rotate(0deg); }
+            100% { transform: translateY(110vh) rotate(360deg); }
         }
     </style>
 </head>
 <body>
-<h1>I love you.</h1>
-    <div class="container">
-        <img id="video-placeholder" src="/favicon-32x32.png" alt="爱心">
-        <video id="video-player" controls>
-            <source src="/lija2.mp4" type="video/mp4">
-            您的浏览器不支持HTML5视频。
-        </video>
-        <p class="instruction">点击上方图片开始播放视频</p>
+    <div id="particles-js"></div>
+    
+    <div class="poem-container">
+        <div class="poem active" data-index="0">
+            <h2>星语情书 ✦ 第一夜</h2>
+            <p>你是量子纠缠的月光
+穿过我波函数的心房
+在薛定谔的夜里
+我们相拥的概率趋于无限</p>
+        </div>
+        
+        <!-- 更多情诗容器... -->
+        
+        <div class="controls">
+            <button onclick="changePoem(-1)">❮</button>
+            <button onclick="changePoem(1)">❯</button>
+        </div>
     </div>
 
-    <script>
-        const placeholder = document.getElementById('video-placeholder');
-        const videoPlayer = document.getElementById('video-player');
+    <!-- 背景音乐（参考网页3音乐功能） -->
+    <audio id="bgm" loop autoplay>
+        <source src="https://example.com/love.mp3" type="audio/mpeg">
+    </audio>
+
+<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+<script>
+    // 粒子背景配置（参考网页3粒子效果）
+    particlesJS('particles-js', {
+        particles: {
+            number: { value: 80 },
+            color: { value: "#ffffff" },
+            shape: { type: "circle" },
+            opacity: { value: 0.5 },
+            size: { value: 3 },
+            move: {
+                enable: true,
+                speed: 1,
+                direction: "none",
+                random: false,
+                straight: false,
+                out_mode: "out",
+                bounce: false
+            }
+        }
+    });
+
+    // 情诗数据库（可扩展）
+    const poems = [
+        { title: "星语情书 ✦ 第一夜", 
+          content: "你是量子纠缠的月光\n穿过我波函数的心房\n在薛定谔的夜里\n我们相拥的概率趋于无限" },
+        // 更多情诗...
+    ];
+
+    // 情诗轮播逻辑（参考网页6/7轮播原理）
+    let currentPoem = 0;
+    function changePoem(direction) {
+        const poems = document.querySelectorAll('.poem');
+        poems[currentPoem].classList.remove('active');
         
-        placeholder.addEventListener('click', function() {
-            // 隐藏图片
-            placeholder.style.display = 'none';
-            // 显示视频并播放
-            videoPlayer.style.display = 'block';
-            videoPlayer.play();
-        });
-        
-        // 当视频结束时，重新显示图片
-        videoPlayer.addEventListener('ended', function() {
-            videoPlayer.style.display = 'none';
-            placeholder.style.display = 'block';
-        });
-    </script>
+        currentPoem = (currentPoem + direction + poems.length) % poems.length;
+        poems[currentPoem].classList.add('active');
+    }
+
+    // 自动轮播（参考网页8自动播放）
+    setInterval(() => changePoem(1), 10000);
+
+    // 花瓣生成器（参考网页3动态特效）
+    function createPetals() {
+        setInterval(() => {
+            const petal = document.createElement('div');
+            petal.className = 'petal';
+            petal.style.left = Math.random() * 100 + 'vw';
+            petal.style.animationDuration = Math.random() * 3 + 5 + 's';
+            document.body.appendChild(petal);
+            
+            petal.addEventListener('animationend', () => petal.remove());
+        }, 300);
+    }
+    createPetals();
+</script>
 </body>
 </html>
