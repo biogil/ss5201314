@@ -1,279 +1,189 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" href="/favicon-32x32.png" type="image/png" size>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>给最爱的ss</title>
+    <title>浪漫之约 | 永恒的爱</title>
     <style>
-        /* 主背景与粒子特效 */
+        /* 主背景动画 - 参考网页2的渐变效果[2](@ref) */
         body {
             margin: 0;
-            height: 100vh;
-            background: linear-gradient(45deg, #ff7eb9 0%, #7d7fff 100%);
-            overflow: hidden;
-            font-family: '华文行楷', cursive;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: linear-gradient(135deg, #ff99cc 0%, #ff4d94 100%);
+            animation: sky 20s infinite linear;
+            font-family: 'Microsoft YaHei', cursive;
+            overflow-x: hidden;
         }
-        
-        /* 粒子画布 */
-        #particles-js {
-            position: absolute;
+
+        @keyframes sky {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 爱心容器 - 改进网页2的动画效果[2](@ref) */
+        .hearts {
+            position: fixed;
             width: 100%;
             height: 100%;
-            z-index: 1;
             pointer-events: none;
         }
 
-        /* 情诗容器 */
-        .poem-container {
-            position: fixed;
-            top: 30%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 2;
-            width: 90%;
-            max-width: 800px;
-            padding: 40px;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 30px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
-            border: 1px solid rgba(255, 255, 255, 0.18);
+        .heart {
+            position: absolute;
+            font-size: 2em;
+            color: #ff0066;
+            animation: float 6s linear infinite;
+            text-shadow: 0 0 20px rgba(255,0,102,0.5);
         }
 
-        /* 情诗切换动画 */
-        .poem {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 1s ease;
-            position: absolute;
-            width: 85%;
+        @keyframes float {
+            0% { transform: translateY(100vh) scale(0.5); }
+            100% { transform: translateY(-100vh) scale(1.5); }
+        }
+
+        /* 主内容区 - 参考网页3的登录界面布局[3](@ref) */
+        .container {
             text-align: center;
-        }
-        
-        .poem.active {
-            opacity: 1;
-            transform: translateY(0);
+            padding: 2em;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            margin-top: 5vh;
+            z-index: 1;
         }
 
-        /* 文字样式 */
-        h2 {
-            color: #fff3f8;
-            font-size: 2.5em;
-            text-shadow: 2px 2px 4px rgba(255, 110, 185, 0.5);
-            margin-bottom: 30px;
+        h1 {
+            font-size: 3.5em;
+            color: #ffffff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            margin-bottom: 0.5em;
+            animation: pulse 2s ease-in-out infinite;
         }
-        
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
         p {
+            font-size: 1.2em;
             color: #fff;
-            font-size: 1.8em;
             line-height: 1.8;
-            margin: 20px 0;
-            white-space: pre-line;
+            max-width: 600px;
+            margin: 1em auto;
         }
 
-        /* 控制按钮 */
-        .controls {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 110%;
-            display: flex;
-            justify-content: space-between;
-            z-index: 3;
-        }
-        
-        button {
-            background: none;
-            border: 2px solid rgba(255,255,255,0.3);
-            color: white;
-            padding: 15px 20px;
+        /* 照片展示 - 结合网页1的图片建议[1](@ref) */
+        .photo-frame {
+            width: 300px;
+            height: 300px;
+            border: 5px solid white;
             border-radius: 50%;
-            font-size: 1.5em;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(5px);
-        }
-        
-        button:hover {
-            background: rgba(255,255,255,0.2);
-            transform: scale(1.1);
+            overflow: hidden;
+            margin: 2em auto;
+            box-shadow: 0 0 30px rgba(0,0,0,0.2);
+            animation: rotate 20s linear infinite;
         }
 
-        button:focus {
-            outline: 2px solid rgba(255,255,255,0.5);
-            box-shadow: 0 0 10px rgba(255,255,255,0.3);
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
-        /* 花瓣特效 */
-        .petal {
-            position: absolute;
-            width: 15px;
-            height: 15px;
-            background: linear-gradient(45deg, #ff9ec7, #ffdae9);
-            border-radius: 50% 50% 0 50%;
-            pointer-events: none;
-            animation: fall 8s linear infinite;
-        }
-
-        @keyframes fall {
-            0% { transform: translateY(-10vh) rotate(0deg); }
-            100% { transform: translateY(110vh) rotate(360deg); }
-        }
-
-        /* 响应式设计 */
-        @media (max-width: 768px) {
-            .poem-container {
-                width: 95%;
-                padding: 20px;
-            }
-            
-            h2 {
-                font-size: 2em;
-                margin-bottom: 20px;
-            }
-            
-            p {
-                font-size: 1.4em;
-            }
-            
-            button {
-                padding: 12px;
-                font-size: 1.2em;
-            }
+        .photo-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
     </style>
 </head>
 <body>
-    <div id="particles-js"></div>
-    
-    <div class="poem-container">
-        <div class="poem active" data-index="0">
-            <h2>星语情书 ✦ 第一夜</h2>
-            <p>你是量子纠缠的月光
-穿过我波函数的心房
-在薛定谔的夜里
-我们相拥的概率趋于无限</p>
-        </div>
-        
-        <div class="poem" data-index="1">
-            <h2>时空褶皱 ✦ 第二夜</h2>
-            <p>在相对论的钟慢里
-冻结与你共度的每一纳秒
-引力波震颤的涟漪
-是我们跨越光年的心跳</p>
-        </div>
-        
-        <!-- 其他情诗结构类似，此处省略以节省篇幅 -->
-        
-        <div class="controls">
-            <button aria-label="上一首">❮</button>
-            <button aria-label="下一首">❯</button>
-        </div>
+    <!-- 动态爱心背景 -->
+    <div class="hearts">
+        <div class="heart" style="left:10%;">♥</div>
+        <div class="heart" style="left:30%;">♥</div>
+        <div class="heart" style="left:50%;">♥</div>
+        <div class="heart" style="left:70%;">♥</div>
+        <div class="heart" style="left:90%;">♥</div>
     </div>
 
-    <audio controls autoplay>
-        <source src="/Liebestraum No. 3.mp3" type="audio/mpeg">
+    <!-- 主内容区 -->
+    <div class="container">
+        <h1>给最爱的你</h1>
+        
+        <div class="photo-frame">
+            <img src="your-photo.jpg" alt="我们的回忆">
+        </div>
+
+        <p>自初次相遇的那刻起，<br>
+        你的笑容便如晨曦般照亮我的世界。<br>
+        每个共同度过的日夜，<br>
+        都编织成最璀璨的星河。</p>
+
+        <p>愿以余生为笔，时光为笺，<br>
+        书不尽三生三世的爱恋。<br>
+        点击下方按钮，开启我们的永恒...</p>
+
+        <!-- 交互按钮 - 参考网页1的JS交互[1](@ref) -->
+        <button onclick="showLetter()" style="
+            background: #ff4d6d;
+            color: white;
+            padding: 1em 2em;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1em;
+        ">
+            展开情书
+        </button>
+    </div>
+
+    <!-- 背景音乐 - 综合网页6/7/8的实现方式[6,7,8](@ref) -->
+    <audio id="bgm" autoplay loop>
+        <source src="Liebestraum No. 3.mp3" type="audio/mpeg">
+        您的浏览器不支持音频播放
     </audio>
 
-<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-<script>
-    // 粒子背景配置
-    particlesJS('particles-js', {
-        particles: {
-            number: { value: 80 },
-            color: { value: "#ffffff" },
-            shape: { type: "circle" },
-            opacity: { value: 0.5 },
-            size: { value: 3 },
-            move: {
-                enable: true,
-                speed: 1,
-                direction: "none",
-                random: false,
-                straight: false,
-                out_mode: "out",
-                bounce: false
+    <script>
+        // 动态爱心生成 - 优化网页2的动画逻辑[2](@ref)
+        function createHearts() {
+            const container = document.querySelector('.hearts');
+            for(let i=0; i<20; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.style.left = Math.random()*100 + '%';
+                heart.style.animationDelay = Math.random()*6 + 's';
+                container.appendChild(heart);
             }
         }
-    });
+        createHearts();
 
-    // 情诗数据库
-    const poems = [
-        { title: "星语情书 ✦ 第一夜", content: "你是量子纠缠的月光\n穿过我波函数的心房\n在薛定谔的夜里\n我们相拥的概率趋于无限" },
-        { title: "时空褶皱 ✦ 第二夜", content: "在相对论的钟慢里\n冻结与你共度的每一纳秒\n引力波震颤的涟漪\n是我们跨越光年的心跳" },
-        { title: "基因编辑 ✦ 第三夜", content: "CRISPR剪切思念的冗余\n在启动子区域\n永久编码你的笑容\n我这自私的遗传永不突变" },
-        { title: "暗物质之舞 ✦ 第四夜", content: "不可见的引力缠绕\n构成星系般旋转的轨迹\n我们95%的默契\n藏在宇宙的未知里" },
-        { title: "纳米情书 ✦ 第五夜", content: "用原子力显微镜\n在石墨烯表面蚀刻\n比碳60结构更稳定的\n我爱你晶体阵列" },
-        { title: "双缝实验 ✦ 第六夜", content: "当观测者不再介入\n波粒二象性的暧昧里\n你是我唯一确定的\n坍缩态结局" },
-        { title: "干细胞之诺 ✦ 第七夜", content: "分化成亿万细胞\n每个线粒体都携带\n端粒酶激活的誓言\n对抗时光的氧化损伤" },
-        { title: "拓扑绝缘 ✦ 第八夜", content: "表面导电的思念\n与体内绝缘的克制\n在量子自旋霍尔态\n构建单向通行的温柔" },
-        { title: "区块链之约 ✦ 第九夜", content: "分布式记账的承诺\n经51%节点验证\n写入不可篡改的\n爱情智能合约" },
-        { title: "弦理论 ✦ 第十夜", content: "蜷缩在十维空间\n振动频率同步的弦\n终于解开卡拉比-丘\n流形的永恒纠缠" }
-    ];
+        // 情书展示 - 参考网页1的弹窗交互[1](@ref)
+        function showLetter() {
+            const letter = `
+                <div class="love-letter">
+                    <h2>致我永远的挚爱：</h2>
+                    <p>（此处编写您个性化的表白内容）</p>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', letter);
+        }
 
-    // 初始化情诗DOM
-    const container = document.querySelector('.poem-container');
-    poems.forEach((poem, index) => {
-        if (index === 0) return; // 跳过已存在的第一个
-        const div = document.createElement('div');
-        div.className = 'poem';
-        div.dataset.index = index;
-        div.innerHTML = `
-            <h2>${poem.title}</h2>
-            <p>${poem.content}</p>
-        `;
-        container.insertBefore(div, document.querySelector('.controls'));
-    });
-
-    // 轮播控制逻辑
-    let currentPoem = 0;
-    let autoPlayTimer = null;
-    
-    function changePoem(direction) {
-        const poems = document.querySelectorAll('.poem');
-        poems[currentPoem].classList.remove('active');
-        
-        currentPoem = (currentPoem + direction + poems.length) % poems.length;
-        poems[currentPoem].classList.add('active');
-        
-        resetAutoPlay();
-    }
-
-    // 自动播放控制
-    function resetAutoPlay() {
-        clearInterval(autoPlayTimer);
-        autoPlayTimer = setInterval(() => changePoem(1), 10000);
-    }
-    
-    // 按钮事件绑定
-    document.querySelectorAll('button').forEach((btn, index) => {
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            changePoem(index === 0 ? -1 : 1);
+        // 自动播放处理 - 参考网页7的交互建议[7](@ref)
+        document.addEventListener('click', function() {
+            const audio = document.getElementById('bgm');
+            if(audio.paused) {
+                audio.play().catch(() => {});
+            }
         });
-    });
-
-    // 花瓣生成器
-    function createPetals() {
-        setInterval(() => {
-            const petal = document.createElement('div');
-            petal.className = 'petal';
-            petal.style.left = Math.random() * 100 + 'vw';
-            petal.style.animationDuration = Math.random() * 3 + 5 + 's';
-            document.body.appendChild(petal);
-            
-            petal.addEventListener('animationend', () => petal.remove());
-        }, 300);
-    }
-    
-    // 启动系统
-    document.addEventListener('DOMContentLoaded', () => {
-        resetAutoPlay();
-        createPetals();
-        document.getElementById('bgm').play().catch(() => {});
-    });
-</script>
+    </script>
 </body>
 </html>
